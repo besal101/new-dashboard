@@ -1,0 +1,162 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId], map: "Account_userId_fkey")
+}
+
+model User {
+  id             String     @id @default(cuid())
+  name           String
+  email          String     @unique
+  emailVerified  DateTime?
+  image          String?
+  password       String?
+  role           String     @default("user")
+  birthdate      DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  mobile         String?    @unique
+  mobileVerified DateTime?
+  accounts       Account[]
+  address        Address[]
+  categories     Category[]
+  products       Product[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum AddressType {
+  Work
+  Home
+}
+
+model Address {
+  id        Int         @id @default(autoincrement())
+  userId    String
+  address   String
+  city      String
+  country   String
+  latitude  Float
+  longitude Float
+  type      AddressType
+  isDefault Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Address_userId_fkey")
+}
+
+model Category {
+  id               Int        @id @default(autoincrement())
+  name             String
+  slug             String     @unique
+  arName           String?
+  ruName           String?
+  image            String
+  title            String?
+  description      String?
+  parentCategoryId Int?
+  published        Boolean    @default(true)
+  createdById      String
+  createdAt        DateTime   @default(now())
+  createdBy        User       @relation(fields: [createdById], references: [id])
+  parentCategory   Category?  @relation("Subcategories", fields: [parentCategoryId], references: [id])
+  subcategories    Category[] @relation("Subcategories")
+  products         Product[]
+
+  @@index([createdById], map: "Category_createdById_fkey")
+  @@index([parentCategoryId], map: "Category_parentCategoryId_fkey")
+}
+
+model Product {
+  id                Int                @id @default(autoincrement())
+  categoryId        Int
+  category          Category           @relation(fields: [categoryId], references: [id])
+  name              String
+  nameAr            String?
+  slug              String             @unique
+  published         Boolean            @default(true)
+  shortDesc         String
+  shortDescAr       String?
+  longDesc          String
+  longDescAr        String?
+  price             Float
+  discountPrice     Float?
+  badge             String?
+  mainImage         String
+  quantity          Int
+  weightDimension   String
+  weightDimensionAr String?
+  specifications    String
+  specificationsAr  String?
+  metaTitle         String?
+  metaDescription   String?
+  metaKeywords      String?
+  itemCode          String?
+  itemSeries        String?
+  variationType     String?
+  variations        ProductVariation[]
+  reviews           Review[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  createdById       String
+  createdBy         User               @relation(fields: [createdById], references: [id])
+
+  @@index([createdById], map: "Category_createdById_fkey")
+  @@fulltext([name, nameAr, shortDesc, shortDescAr, specifications, specificationsAr, metaTitle, metaDescription, metaKeywords])
+}
+
+model ProductVariation {
+  id         Int      @id @default(autoincrement())
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  Int
+  name       String
+  colorImage String?
+  size       String?
+  price      Float
+  quantity   Int
+  itemCode   String   @unique
+  images     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  name      String
+  content   String
+  rating    Int
+  createdAt DateTime @default(now())
+}
