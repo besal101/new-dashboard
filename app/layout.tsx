@@ -10,7 +10,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 const fonts = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Lifesmile |  ERP SYSTEMS",
+  title: "Lifesmile |  ERP SYSTEMS HANDLER",
   description:
     "ERP System for Lifesmile. This is used for product upload, create, edit and perform various operations on dashboard.",
 };
