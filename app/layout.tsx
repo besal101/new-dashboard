@@ -12,7 +12,7 @@ const fonts = Plus_Jakarta_Sans({ subsets: ["latin"] });
 export const metadata = {
   title: "Lifesmile |  ERP SYSTEMS",
   description:
-    "CRM System for Lifesmile Cookware Company a division of Basmat Al Hayat",
+    "ERP System for Lifesmile.",
 };
 
 export default function RootLayout({
