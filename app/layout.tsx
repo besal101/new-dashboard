@@ -12,7 +12,7 @@ const fonts = Plus_Jakarta_Sans({ subsets: ["latin"] });
 export const metadata = {
   title: "Lifesmile |  ERP SYSTEMS",
   description:
-    "ERP System for Lifesmile.",
+    "ERP System for Lifesmile. This is used for product upload, create, edit and perform various operations on dashboard.",
 };
 
 export default function RootLayout({
